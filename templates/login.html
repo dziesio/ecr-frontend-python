@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in — LibeHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%); min-height: 100vh; }
+        .login-card { border: none; border-radius: 12px; }
+        .login-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #2563eb, #7c3aed);
+                      border-radius: 12px; display: flex; align-items: center;
+                      justify-content: center; font-size: 1.5rem; color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center" style="margin-top: 12vh;">
+        <div class="col-sm-10 col-md-6 col-lg-4">
+            <div class="text-center mb-4">
+                <div class="login-logo mx-auto mb-3"><i class="bi bi-journal-text"></i></div>
+                <h5 class="fw-bold mb-0">LibeHub</h5>
+                <p class="text-muted small">Sign in to your account</p>
+            </div>
+            <div class="card shadow-sm login-card">
+                <div class="card-body p-4">
+                    {% if error %}
+                    <div class="alert alert-danger py-2 mb-3">
+                        <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                    </div>
+                    {% endif %}
+                    {% if logout %}
+                    <div class="alert alert-success py-2 mb-3">
+                        <i class="bi bi-check-circle me-1"></i>You have been signed out.
+                    </div>
+                    {% endif %}
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-medium">Username</label>
+                            <input id="username" type="text" name="username"
+                                   class="form-control" autocomplete="username" autofocus required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-medium">Password</label>
+                            <input id="password" type="password" name="password"
+                                   class="form-control" autocomplete="current-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-medium">Sign in</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

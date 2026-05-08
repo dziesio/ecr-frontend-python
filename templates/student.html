@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ student.fullName }} — LibeHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { background: #f1f5f9; }
+        .nav-tabs .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: .65rem 1.1rem; }
+        .nav-tabs .nav-link.active { color: #2563eb; border-bottom-color: #2563eb; background: none; font-weight: 600; }
+        .nav-tabs { border-bottom: 2px solid #e2e8f0; }
+        .tab-content { background: #fff; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; padding: 1.5rem; }
+        .grade-badge { font-size: .9rem; min-width: 2rem; text-align: center; }
+        .accordion-button:not(.collapsed) { background: linear-gradient(90deg, #dbeafe, #ede9fe); color: #1d4ed8; box-shadow: none; }
+        .accordion-button:focus { box-shadow: none; }
+        th { font-weight: 500; font-size: .82rem; text-transform: uppercase; letter-spacing: .03em; color: #64748b; }
+        .empty-state { text-align: center; padding: 3rem 0; color: #94a3b8; }
+        .empty-state i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+        .src-librus { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+        .src-bc     { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+        .msg-html-content { font-size: .9rem; color: #343a40; }
+        .msg-html-content p { margin: 0 0 .6rem; }
+        .msg-html-content ul, .msg-html-content ol { padding-left: 1.4rem; margin-bottom: .6rem; }
+        .msg-html-content li { margin-bottom: .25rem; }
+        .msg-html-content a { color: #2563eb; }
+    </style>
+</head>
+<body>
+
+{% include "fragments/navbar.html" %}
+
+<div class="container py-4">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Students</a></li>
+            <li class="breadcrumb-item active">{{ student.fullName }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex align-items-center gap-3 mb-4 p-4 rounded-4 text-white"
+         style="background: linear-gradient(135deg, #1e1b4b 0%, #2563eb 100%);">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">
+            <i class="bi bi-person"></i>
+        </div>
+        <div>
+            <h5 class="fw-bold mb-0">{{ student.fullName }}</h5>
+            {% if student.className %}
+            <span class="small opacity-75">{{ student.className }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="studentTabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#grades">
+                <i class="bi bi-mortarboard me-1"></i>Grades
+                <span class="badge bg-light text-secondary ms-1 fw-normal">{{ grades | length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#messages">
+                <i class="bi bi-envelope me-1"></i>Messages
+                <span class="badge bg-light text-secondary ms-1 fw-normal">{{ messages | length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#attendance">
+                <i class="bi bi-calendar-check me-1"></i>Attendance
+                <span class="badge bg-light text-secondary ms-1 fw-normal">{{ attendance | length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#announcements">
+                <i class="bi bi-megaphone me-1"></i>Announcements
+                <span class="badge bg-light text-secondary ms-1 fw-normal">{{ announcements | length }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="studentTabsContent">
+
+        <!-- Grades -->
+        <div class="tab-pane fade show active" id="grades">
+            {% if not grades %}
+            <div class="empty-state"><i class="bi bi-mortarboard"></i>No grades available yet.</div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead><tr><th>Subject</th><th>Grade</th><th>Category</th><th>Weight</th><th>Date</th><th>Teacher</th></tr></thead>
+                    <tbody>
+                        {% for g in grades %}
+                        <tr>
+                            <td class="fw-medium">{{ g.subjectName }}</td>
+                            <td><span class="badge bg-primary grade-badge">{{ g.gradeValue }}</span></td>
+                            <td class="text-muted small">{{ g.category }}</td>
+                            <td class="text-muted small">{{ g.weight }}</td>
+                            <td class="text-muted small">{{ g.dateIssued }}</td>
+                            <td class="text-muted small">{{ g.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Messages -->
+        <div class="tab-pane fade" id="messages">
+            {% if not messages %}
+            <div class="empty-state"><i class="bi bi-envelope"></i>No messages available yet.</div>
+            {% else %}
+            <ul class="nav nav-pills gap-1 mb-3">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#msg-inbox">
+                        <i class="bi bi-inbox me-1"></i>Inbox
+                        <span class="badge bg-white bg-opacity-25 ms-1 fw-normal">{{ inbox | length }}</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#msg-sent">
+                        <i class="bi bi-send me-1"></i>Sent
+                        <span class="badge bg-white bg-opacity-25 ms-1 fw-normal">{{ sent | length }}</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content">
+
+                <!-- Inbox -->
+                <div class="tab-pane fade show active" id="msg-inbox">
+                    {% if not inbox %}
+                    <div class="empty-state"><i class="bi bi-inbox"></i>No inbox messages.</div>
+                    {% else %}
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <div class="input-group input-group-sm" style="max-width: 240px;">
+                            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 msg-filter" placeholder="Filter by sender…">
+                        </div>
+                        <select class="form-select form-select-sm msg-source-filter" style="max-width:180px;">
+                            <option value="">All sources</option>
+                            <option value="LIBRUS">Librus</option>
+                            <option value="BRITISH_COUNCIL">British Council</option>
+                        </select>
+                    </div>
+                    <div class="accordion accordion-flush">
+                        {% for msg in inbox %}
+                        <div class="accordion-item msg-row border rounded mb-2"
+                             data-sender="{{ msg.sender or '' }}" data-source="{{ msg.messageSource or '' }}">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 rounded" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#inbox-{{ loop.index0 }}">
+                                    <div class="d-flex align-items-center gap-2 w-100 me-2 min-w-0">
+                                        {% if msg.messageSource == 'LIBRUS' %}
+                                        <span class="badge rounded-pill flex-shrink-0 fw-normal src-librus" style="font-size:.72rem;"><i class="bi bi-book-half me-1"></i>Librus</span>
+                                        {% elif msg.messageSource == 'BRITISH_COUNCIL' %}
+                                        <span class="badge rounded-pill flex-shrink-0 fw-normal src-bc" style="font-size:.72rem;"><i class="bi bi-globe2 me-1"></i>British Council</span>
+                                        {% elif msg.messageSource %}
+                                        <span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary-subtle text-secondary border" style="font-size:.72rem;">{{ msg.messageSource }}</span>
+                                        {% endif %}
+                                        <span class="text-muted small flex-shrink-0 text-nowrap">{{ msg.sentAt | dt }}</span>
+                                        <span class="fw-medium text-nowrap flex-shrink-0">{{ msg.sender }}</span>
+                                        {% if msg.senderRole %}
+                                        <span class="badge bg-light text-secondary border flex-shrink-0 fw-normal text-nowrap" style="font-size:.7rem;">{{ msg.senderRole }}</span>
+                                        {% endif %}
+                                        <span class="text-muted text-truncate small">{{ msg.subject }}</span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="inbox-{{ loop.index0 }}" class="accordion-collapse collapse">
+                                {% if msg.messageSource == 'BRITISH_COUNCIL' %}
+                                <div class="accordion-body pt-2 msg-html-content">{{ msg.content | safe }}</div>
+                                {% else %}
+                                <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ msg.content }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sent -->
+                <div class="tab-pane fade" id="msg-sent">
+                    {% if not sent %}
+                    <div class="empty-state"><i class="bi bi-send"></i>No sent messages.</div>
+                    {% else %}
+                    <div class="input-group input-group-sm mb-3" style="max-width: 260px;">
+                        <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 msg-filter" placeholder="Filter by sender…">
+                    </div>
+                    <div class="accordion accordion-flush">
+                        {% for msg in sent %}
+                        <div class="accordion-item msg-row border rounded mb-2" data-sender="{{ msg.sender or '' }}">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 rounded" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#sent-{{ loop.index0 }}">
+                                    <div class="d-flex align-items-center gap-2 w-100 me-2 min-w-0">
+                                        {% if msg.messageSource == 'LIBRUS' %}
+                                        <span class="badge rounded-pill flex-shrink-0 fw-normal src-librus" style="font-size:.72rem;"><i class="bi bi-book-half me-1"></i>Librus</span>
+                                        {% elif msg.messageSource == 'BRITISH_COUNCIL' %}
+                                        <span class="badge rounded-pill flex-shrink-0 fw-normal src-bc" style="font-size:.72rem;"><i class="bi bi-globe2 me-1"></i>British Council</span>
+                                        {% elif msg.messageSource %}
+                                        <span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary-subtle text-secondary border" style="font-size:.72rem;">{{ msg.messageSource }}</span>
+                                        {% endif %}
+                                        <span class="text-muted small flex-shrink-0 text-nowrap">{{ msg.sentAt | dt }}</span>
+                                        <span class="fw-medium text-nowrap flex-shrink-0">{{ msg.sender }}</span>
+                                        {% if msg.senderRole %}
+                                        <span class="badge bg-light text-secondary border flex-shrink-0 fw-normal text-nowrap" style="font-size:.7rem;">{{ msg.senderRole }}</span>
+                                        {% endif %}
+                                        <span class="text-muted text-truncate small">{{ msg.subject }}</span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="sent-{{ loop.index0 }}" class="accordion-collapse collapse">
+                                {% if msg.messageSource == 'BRITISH_COUNCIL' %}
+                                <div class="accordion-body pt-2 msg-html-content">{{ msg.content | safe }}</div>
+                                {% else %}
+                                <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ msg.content }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Attendance -->
+        <div class="tab-pane fade" id="attendance">
+            {% if not attendance %}
+            <div class="empty-state"><i class="bi bi-calendar-check"></i>No attendance records yet.</div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead><tr><th>Date</th><th>Lesson</th><th>Subject</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for a in attendance %}
+                        <tr>
+                            <td class="text-muted small">{{ a.date }}</td>
+                            <td class="text-muted small">{{ a.lessonNumber }}</td>
+                            <td class="fw-medium">{{ a.subject }}</td>
+                            <td>
+                                {% if a.status == 'PRESENT' %}<span class="badge bg-success-subtle text-success border border-success-subtle">Present</span>
+                                {% elif a.status == 'ABSENT' %}<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Absent</span>
+                                {% elif a.status == 'LATE' %}<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Late</span>
+                                {% elif a.status == 'EXCUSED' %}<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">Excused</span>
+                                {% else %}<span class="badge bg-light text-dark">{{ a.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Announcements -->
+        <div class="tab-pane fade" id="announcements">
+            {% if not announcements %}
+            <div class="empty-state"><i class="bi bi-megaphone"></i>No announcements yet.</div>
+            {% else %}
+            <div class="accordion accordion-flush" id="ann-accordion">
+                {% for ann in announcements %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed py-2 px-3 d-flex gap-2 align-items-center flex-wrap"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#ann-{{ loop.index0 }}">
+                            <span class="text-muted small text-nowrap flex-shrink-0">{{ ann.publishedAt }}</span>
+                            {% if ann.source == 'LIBRUS' %}<span class="badge rounded-pill flex-shrink-0 fw-normal src-librus">Librus</span>
+                            {% elif ann.source == 'BRITISH_COUNCIL' %}<span class="badge rounded-pill flex-shrink-0 fw-normal src-bc">British Council</span>
+                            {% elif ann.source %}<span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary text-white">{{ ann.source }}</span>
+                            {% endif %}
+                            <span class="fw-medium flex-grow-1">{{ ann.title }}</span>
+                            <span class="text-muted small text-nowrap flex-shrink-0">{{ ann.author }}</span>
+                            {% if ann.authorRole %}
+                            <span class="badge rounded-pill bg-light text-secondary fw-normal flex-shrink-0">{{ ann.authorRole }}</span>
+                            {% endif %}
+                        </button>
+                    </h2>
+                    <div id="ann-{{ loop.index0 }}" class="accordion-collapse collapse">
+                        <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ ann.content }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelectorAll('.grade-badge').forEach(badge => {
+    const n = parseInt(badge.textContent.trim());
+    if      (n >= 5) badge.className = 'badge grade-badge bg-success';
+    else if (n === 4) badge.className = 'badge grade-badge bg-primary';
+    else if (n === 3) badge.className = 'badge grade-badge bg-warning text-dark';
+    else if (n <= 2)  badge.className = 'badge grade-badge bg-danger';
+});
+function applyMsgFilters(pane) {
+    const text   = (pane.querySelector('.msg-filter')?.value || '').toLowerCase();
+    const source = pane.querySelector('.msg-source-filter')?.value || '';
+    pane.querySelectorAll('.msg-row').forEach(row => {
+        const senderOk = row.dataset.sender.toLowerCase().includes(text);
+        const sourceOk = !source || row.dataset.source === source;
+        row.style.display = senderOk && sourceOk ? '' : 'none';
+    });
+}
+document.querySelectorAll('.msg-filter, .msg-source-filter').forEach(el => {
+    el.addEventListener('input', function () { applyMsgFilters(this.closest('.tab-pane')); });
+});
+</script>
+</body>
+</html>
