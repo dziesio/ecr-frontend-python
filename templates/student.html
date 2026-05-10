@@ -144,37 +144,33 @@
                             <option value="BRITISH_COUNCIL">British Council</option>
                         </select>
                     </div>
-                    <div class="accordion accordion-flush">
+                    <div class="accordion accordion-flush" id="inbox-accordion">
                         {% for msg in inbox %}
-                        <div class="accordion-item msg-row border rounded mb-2"
+                        <div class="accordion-item msg-row"
                              data-sender="{{ msg.sender or '' }}" data-source="{{ msg.messageSource or '' }}">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed py-2 rounded" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#inbox-{{ loop.index0 }}">
-                                    <div class="d-flex flex-column w-100 me-2 min-w-0">
-                                        <div class="d-flex align-items-center gap-2 min-w-0">
-                                            {% if msg.messageSource == 'LIBRUS' %}
-                                            <span class="badge rounded-pill flex-shrink-0 fw-normal src-librus" style="font-size:.72rem;"><i class="bi bi-book-half me-1"></i>Librus</span>
-                                            {% elif msg.messageSource == 'BRITISH_COUNCIL' %}
-                                            <span class="badge rounded-pill flex-shrink-0 fw-normal src-bc" style="font-size:.72rem;"><i class="bi bi-globe2 me-1"></i>British Council</span>
-                                            {% elif msg.messageSource %}
-                                            <span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary-subtle text-secondary border" style="font-size:.72rem;">{{ msg.messageSource }}</span>
-                                            {% endif %}
-                                            <span class="fw-medium text-truncate">{{ msg.sender }}</span>
-                                            {% if msg.senderRole %}
-                                            <span class="badge bg-light text-secondary border flex-shrink-0 fw-normal text-nowrap" style="font-size:.7rem;">{{ msg.senderRole }}</span>
-                                            {% endif %}
-                                            <span class="text-muted small flex-shrink-0 text-nowrap ms-auto">{{ msg.sentAt | dt }}</span>
-                                        </div>
-                                        <div class="text-muted text-truncate" style="font-size:.82rem;">{{ msg.subject }}</div>
-                                    </div>
+                                <button class="accordion-button collapsed py-2 px-3 d-flex gap-2 align-items-center flex-wrap"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#inbox-{{ loop.index0 }}">
+                                    <span class="text-muted small text-nowrap flex-shrink-0">{{ msg.sentAt | dt }}</span>
+                                    {% if msg.messageSource == 'LIBRUS' %}
+                                    <span class="badge rounded-pill flex-shrink-0 fw-normal src-librus" style="font-size:.72rem;"><i class="bi bi-book-half me-1"></i>Librus</span>
+                                    {% elif msg.messageSource == 'BRITISH_COUNCIL' %}
+                                    <span class="badge rounded-pill flex-shrink-0 fw-normal src-bc" style="font-size:.72rem;"><i class="bi bi-globe2 me-1"></i>British Council</span>
+                                    {% elif msg.messageSource %}
+                                    <span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary-subtle text-secondary border" style="font-size:.72rem;">{{ msg.messageSource }}</span>
+                                    {% endif %}
+                                    <span class="fw-medium flex-grow-1">{{ msg.subject }}</span>
+                                    <span class="text-muted small text-nowrap flex-shrink-0">{{ msg.sender }}</span>
+                                    {% if msg.senderRole %}
+                                    <span class="badge bg-light text-secondary border flex-shrink-0 fw-normal text-nowrap" style="font-size:.7rem;">{{ msg.senderRole }}</span>
+                                    {% endif %}
                                 </button>
                             </h2>
                             <div id="inbox-{{ loop.index0 }}" class="accordion-collapse collapse">
                                 {% if msg.messageSource == 'BRITISH_COUNCIL' %}
                                 <div class="accordion-body pt-2 msg-html-content">{{ msg.content | safe }}</div>
                                 {% else %}
-                                <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ msg.content }}</div>
+                                <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ msg.content | clean }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -192,36 +188,32 @@
                         <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
                         <input type="text" class="form-control border-start-0 msg-filter" placeholder="Filter by sender…">
                     </div>
-                    <div class="accordion accordion-flush">
+                    <div class="accordion accordion-flush" id="sent-accordion">
                         {% for msg in sent %}
-                        <div class="accordion-item msg-row border rounded mb-2" data-sender="{{ msg.sender or '' }}">
+                        <div class="accordion-item msg-row" data-sender="{{ msg.sender or '' }}">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed py-2 rounded" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#sent-{{ loop.index0 }}">
-                                    <div class="d-flex flex-column w-100 me-2 min-w-0">
-                                        <div class="d-flex align-items-center gap-2 min-w-0">
-                                            {% if msg.messageSource == 'LIBRUS' %}
-                                            <span class="badge rounded-pill flex-shrink-0 fw-normal src-librus" style="font-size:.72rem;"><i class="bi bi-book-half me-1"></i>Librus</span>
-                                            {% elif msg.messageSource == 'BRITISH_COUNCIL' %}
-                                            <span class="badge rounded-pill flex-shrink-0 fw-normal src-bc" style="font-size:.72rem;"><i class="bi bi-globe2 me-1"></i>British Council</span>
-                                            {% elif msg.messageSource %}
-                                            <span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary-subtle text-secondary border" style="font-size:.72rem;">{{ msg.messageSource }}</span>
-                                            {% endif %}
-                                            <span class="fw-medium text-truncate">{{ msg.sender }}</span>
-                                            {% if msg.senderRole %}
-                                            <span class="badge bg-light text-secondary border flex-shrink-0 fw-normal text-nowrap" style="font-size:.7rem;">{{ msg.senderRole }}</span>
-                                            {% endif %}
-                                            <span class="text-muted small flex-shrink-0 text-nowrap ms-auto">{{ msg.sentAt | dt }}</span>
-                                        </div>
-                                        <div class="text-muted text-truncate" style="font-size:.82rem;">{{ msg.subject }}</div>
-                                    </div>
+                                <button class="accordion-button collapsed py-2 px-3 d-flex gap-2 align-items-center flex-wrap"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#sent-{{ loop.index0 }}">
+                                    <span class="text-muted small text-nowrap flex-shrink-0">{{ msg.sentAt | dt }}</span>
+                                    {% if msg.messageSource == 'LIBRUS' %}
+                                    <span class="badge rounded-pill flex-shrink-0 fw-normal src-librus" style="font-size:.72rem;"><i class="bi bi-book-half me-1"></i>Librus</span>
+                                    {% elif msg.messageSource == 'BRITISH_COUNCIL' %}
+                                    <span class="badge rounded-pill flex-shrink-0 fw-normal src-bc" style="font-size:.72rem;"><i class="bi bi-globe2 me-1"></i>British Council</span>
+                                    {% elif msg.messageSource %}
+                                    <span class="badge rounded-pill flex-shrink-0 fw-normal bg-secondary-subtle text-secondary border" style="font-size:.72rem;">{{ msg.messageSource }}</span>
+                                    {% endif %}
+                                    <span class="fw-medium flex-grow-1">{{ msg.subject }}</span>
+                                    <span class="text-muted small text-nowrap flex-shrink-0">{{ msg.sender }}</span>
+                                    {% if msg.senderRole %}
+                                    <span class="badge bg-light text-secondary border flex-shrink-0 fw-normal text-nowrap" style="font-size:.7rem;">{{ msg.senderRole }}</span>
+                                    {% endif %}
                                 </button>
                             </h2>
                             <div id="sent-{{ loop.index0 }}" class="accordion-collapse collapse">
                                 {% if msg.messageSource == 'BRITISH_COUNCIL' %}
                                 <div class="accordion-body pt-2 msg-html-content">{{ msg.content | safe }}</div>
                                 {% else %}
-                                <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ msg.content }}</div>
+                                <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ msg.content | clean }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -288,7 +280,7 @@
                         </button>
                     </h2>
                     <div id="ann-{{ loop.index0 }}" class="accordion-collapse collapse">
-                        <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ ann.content }}</div>
+                        <div class="accordion-body pt-2" style="white-space: pre-wrap; font-size: .9rem; color: #343a40;">{{ ann.content | clean }}</div>
                     </div>
                 </div>
                 {% endfor %}

@@ -57,9 +57,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, same_site="lax", https_only=False)
 
+import re as _re
 templates = Jinja2Templates(directory="templates")
-templates.env.filters["dt"]   = lambda v: str(v)[:16].replace("T", " ") if v else ""
-templates.env.filters["date"] = lambda v: v.strftime("%Y-%m-%d") if hasattr(v, "strftime") else (str(v)[:10] if v else "—")
+templates.env.filters["dt"]    = lambda v: str(v)[:16].replace("T", " ") if v else ""
+templates.env.filters["date"]  = lambda v: v.strftime("%Y-%m-%d") if hasattr(v, "strftime") else (str(v)[:10] if v else "—")
+templates.env.filters["clean"] = lambda v: _re.sub(r'\n{3,}', '\n\n', v.strip()) if v else ""
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
