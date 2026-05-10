@@ -7,6 +7,7 @@ import asyncpg
 import bcrypt
 import httpx
 from fastapi import FastAPI, Form, Request
+from fastapi.exceptions import HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -276,3 +277,8 @@ async def delete_user(request: Request, user_id: str):
     await pool.execute("DELETE FROM app_users WHERE id = $1", uuid.UUID(user_id))
     flash(request, "success", "User deleted.")
     return RedirectResponse("/admin/users", status_code=302)
+
+
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: HTTPException):
+    return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
